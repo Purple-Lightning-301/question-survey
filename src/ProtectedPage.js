@@ -12,6 +12,11 @@ function ProtectedPage(props) {
   const username = useRecoilValue(userAtom);
   const navigate = useNavigate();
   useEffect(() => {
+    const adminName = localStorage.getItem('username');
+    if(adminName == "nhanct.ftu.admin") {
+      navigate("/admin")
+      return;
+    }
     if (username === "") {
       navigate("/naming");
     }

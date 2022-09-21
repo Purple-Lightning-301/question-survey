@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { resultAtom } from "../../user.recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { database } from "../../firebase";
+import { resultAtom, userAtom } from "../../user.recoil";
+import { getDatabase, ref, set } from "firebase/database";
 
 function Survey(props) {
+  const user = useRecoilValue(userAtom);
+  const db = database;
   const setResultRecoil = useSetRecoilState(resultAtom);
   const navigate = useNavigate();
 
@@ -26,17 +30,28 @@ function Survey(props) {
   };
 
   const submit = () => {
-    if(result?.length < 40) {
+    if (result?.length < 40) {
       alert("Please enter all the answers!");
       return;
     }
-    if(result?.some(r => r.value === "")) {
-      alert("Please enter all the answers!")
+    if (result?.some((r) => r.value === "")) {
+      alert("Please enter all the answers!");
       return;
     }
-    setResultRecoil(result)
+    setResultRecoil(result);
+    set(ref(db, "users/" + user), {
+      name: user,
+      result: result
+    })
+      .then(() => {
+        // Data saved successfully!
+        console.log('successful');
+      })
+      .catch((error) => {
+        // The write failed...
+      });
     navigate("/ket-qua");
-  }
+  };
 
   return (
     <div className="d-flex flex-column justify-content-center align-items-center">
@@ -632,7 +647,9 @@ function Survey(props) {
           </tr>
         </tbody>
       </table>
-      <button className="btn btn-primary" onClick={submit}>Xác nhận</button>
+      <button className="btn btn-primary" onClick={submit}>
+        Xác nhận
+      </button>
     </div>
   );
 }

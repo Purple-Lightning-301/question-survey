@@ -37,6 +37,7 @@ function Naming(props) {
     e.preventDefault();
     if(userLogin?.name === 'nhanct.ftu.admin' && userLogin?.password === 'admin') {
       setUser(userLogin?.name);
+      localStorage.setItem('username', userLogin?.name)
     } else if(userLogin?.name !== 'nhanct.ftu.admin') {
       setUser(userLogin?.name);
     }

@@ -9,6 +9,7 @@ function Result(props) {
   const rersultAtom = useRecoilValue(resultAtom);
   const [fullResult, setFullResult] = useState(null);
 
+  console.log(rersultAtom)
   useEffect(() => {
     if (rersultAtom?.length > 0) {
       let spade = rersultAtom.filter((r) => {
