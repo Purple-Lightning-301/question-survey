@@ -9,7 +9,6 @@ function Result(props) {
   const rersultAtom = useRecoilValue(resultAtom);
   const [fullResult, setFullResult] = useState(null);
 
-  console.log(rersultAtom)
   useEffect(() => {
     if (rersultAtom?.length > 0) {
       let spade = rersultAtom.filter((r) => {
@@ -40,69 +39,97 @@ function Result(props) {
 
       let personalTypes = [
         { name: "spade", point: totalSpade },
-        { name: "club", point: totalSpade },
+        { name: "club", point: totalClub },
         { name: "heart", point: totalHeart },
         { name: "diamond", point: totalDiamond },
       ];
       let maxPoint = Math.max(totalSpade, totalClub, totalHeart, totalDiamond);
-      // let minPoint = Math.min(totalSpade, totalClub, totalHeart, totalDiamond)
+      let minPoint = Math.min(totalSpade, totalClub, totalHeart, totalDiamond);
       let maxPersonalType = personalTypes?.find(
         (type) => type.point === maxPoint
+      )?.name;
+      let minPersonalType = personalTypes?.find(
+        (type) => type.point === minPoint
       )?.name;
 
       setFullResult({
         maxPersonalType,
+        minPersonalType,
         personalTypes,
       });
     }
-  }, [resultAtom]);
+  }, [rersultAtom]);
 
   return (
-    <div className="vh-100 d-flex align-items-center justify-content-center">
-      {fullResult?.maxPersonalType === "diamond" && (
-        <div className="card m-auto" style={{width: '18rem'}}>
-          <img src={diamond} className="card-img-top" alt="..." />
-          <div className="card-body">
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
+    <div className="vh-100 d-flex align-items-center justify-content-around">
+      <div className="d-flex align-items-center justify-content-center">
+        {fullResult?.minPersonalType === "diamond" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={diamond} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài đầu tiên của bạn là chất Rô</p>
+            </div>
           </div>
-        </div>
-      )}
-      {fullResult?.maxPersonalType === "spade" && (
-        <div className="card m-auto" style={{width: '18rem'}}>
-          <img src={spade} className="card-img-top" alt="..." />
-          <div className="card-body">
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
+        )}
+        {fullResult?.minPersonalType === "spade" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={spade} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài đầu tiên của bạn là chất Bích</p>
+            </div>
           </div>
-        </div>
-      )}
-      {fullResult?.maxPersonalType === "heart" && (
-        <div className="card m-auto" style={{width: '18rem'}}>
-          <img src={heart} className="card-img-top" alt="..." />
-          <div className="card-body">
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
+        )}
+        {fullResult?.minPersonalType === "heart" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={heart} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài đầu tiên của bạn là chất Cơ</p>
+            </div>
           </div>
-        </div>
-      )}
-      {fullResult?.maxPersonalType === "club" && (
-        <div className="card m-auto" style={{width: '18rem'}}>
-          <img src={heart} className="card-img-top" alt="..." />
-          <div className="card-body">
-            <p className="card-text">
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </p>
+        )}
+        {fullResult?.minPersonalType === "club" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={heart} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài đầu tiên của bạn là chất Tép</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      <div className="d-flex align-items-center justify-content-center">
+        {fullResult?.maxPersonalType === "diamond" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={diamond} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài thứ hai của bạn là chất Rô</p>
+            </div>
+          </div>
+        )}
+        {fullResult?.maxPersonalType === "spade" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={spade} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài đầu tiên của bạn là chất Bích</p>
+            </div>
+          </div>
+        )}
+        {fullResult?.maxPersonalType === "heart" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={heart} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài đầu tiên của bạn là chất Cơ</p>
+            </div>
+          </div>
+        )}
+        {fullResult?.maxPersonalType === "club" && (
+          <div className="card m-auto" style={{ width: "18rem" }}>
+            <img src={heart} className="card-img-top" alt="..." />
+            <div className="card-body">
+              <p className="card-text">Lá bài đầu tiên của bạn là chất Tép</p>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

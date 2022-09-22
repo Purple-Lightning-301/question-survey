@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { database } from "../../firebase";
-import { resultAtom, userAtom } from "../../user.recoil";
+import { resultAtom, teamleadAtom, userAtom } from "../../user.recoil";
 import { getDatabase, ref, set } from "firebase/database";
 
 function Survey(props) {
   const user = useRecoilValue(userAtom);
+  const teamlead = useRecoilValue(teamleadAtom);
   const db = database;
   const setResultRecoil = useSetRecoilState(resultAtom);
   const navigate = useNavigate();
@@ -41,11 +42,12 @@ function Survey(props) {
     setResultRecoil(result);
     set(ref(db, "users/" + user), {
       name: user,
-      result: result
+      result: result,
+      teamlead: teamlead
     })
       .then(() => {
         // Data saved successfully!
-        console.log('successful');
+        console.log("successful");
       })
       .catch((error) => {
         // The write failed...
@@ -57,6 +59,11 @@ function Survey(props) {
     <div className="d-flex flex-column justify-content-center align-items-center">
       <table className="table table-striped">
         <thead>
+          <tr>
+            <th colSpan="8">
+              {user} - team anh/chị {teamlead}
+            </th>
+          </tr>
           <tr>
             <th colSpan="8" className="text-center">
               Trong mỗi hàng NGANG hãy đánh điểm từ 1-4 cho những mô tả cung

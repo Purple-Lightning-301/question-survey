@@ -9,3 +9,8 @@ export const resultAtom = atom({
   key: 'resultAtom', 
   default: [], 
 });
+
+export const teamleadAtom = atom({
+  key: 'teamLead',
+  default: '',
+})

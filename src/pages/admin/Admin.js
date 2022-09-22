@@ -7,19 +7,27 @@ import { useNavigate } from "react-router-dom";
 
 function AdminPage(props) {
   const dbRef = ref(database);
-  const [user,setUser] = useRecoilState(userAtom);
+  const [user, setUser] = useRecoilState(userAtom);
   const navigate = useNavigate();
   const [datas, setDatas] = useState(null);
   const [keyArray, setKeyArray] = useState(null);
 
   const [name, setName] = useState("");
+  const [teamlead, setTeamlead] = useState("");
   const [filteredArray, setFilteredArray] = useState([]);
+  const [totalCount, setTotalCount] = useState({
+    spade: 0,
+    heart: 0,
+    club: 0,
+    diamond: 0
+  });
 
   useEffect(() => {
     get(child(dbRef, `users`))
       .then((snapshot) => {
         if (snapshot.exists()) {
           setDatas(snapshot.val());
+          // console.log(snapshot.val());
         } else {
           console.log("No data available");
         }
@@ -37,6 +45,85 @@ function AdminPage(props) {
     }
   }, [datas]);
 
+  useEffect(() => {
+    let spadeCount = 0;
+    let heartCount = 0;
+    let diamondCount = 0;
+    let clubCount = 0;
+    filteredArray.forEach((key) => {
+      let maxOne =
+        +getValueByKey(key, 1) +
+        +getValueByKey(key, 5) +
+        +getValueByKey(key, 9) +
+        +getValueByKey(key, 13) +
+        +getValueByKey(key, 17) +
+        +getValueByKey(key, 21) +
+        +getValueByKey(key, 25) +
+        +getValueByKey(key, 29) +
+        +getValueByKey(key, 33) +
+        +getValueByKey(key, 37);
+
+        let maxTwo =
+        +getValueByKey(key, 2) +
+        +getValueByKey(key, 6) +
+        +getValueByKey(key, 10) +
+        +getValueByKey(key, 14) +
+        +getValueByKey(key, 18) +
+        +getValueByKey(key, 22) +
+        +getValueByKey(key, 26) +
+        +getValueByKey(key, 30) +
+        +getValueByKey(key, 34) +
+        +getValueByKey(key, 38);
+
+        let maxThree =
+        +getValueByKey(key, 3) +
+        +getValueByKey(key, 7) +
+        +getValueByKey(key, 11) +
+        +getValueByKey(key, 15) +
+        +getValueByKey(key, 19) +
+        +getValueByKey(key, 23) +
+        +getValueByKey(key, 27) +
+        +getValueByKey(key, 31) +
+        +getValueByKey(key, 35) +
+        +getValueByKey(key, 39);
+
+      let maxFour =
+        +getValueByKey(key, 4) +
+        +getValueByKey(key, 8) +
+        +getValueByKey(key, 12) +
+        +getValueByKey(key, 16) +
+        +getValueByKey(key, 20) +
+        +getValueByKey(key, 24) +
+        +getValueByKey(key, 28) +
+        +getValueByKey(key, 32) +
+        +getValueByKey(key, 36) +
+        +getValueByKey(key, 40);
+
+        let minPoint = Math.min(maxOne, maxTwo, maxThree, maxFour);
+        if(minPoint === maxOne) {
+          spadeCount += 1;
+        }
+        if(minPoint === maxTwo) {
+          clubCount += 1;
+        }
+        if(minPoint === maxThree) {
+          heartCount += 1;
+        }
+        if(minPoint === maxFour) {
+          diamondCount += 1;
+        }
+    });
+    setTotalCount(prevTotal => {
+      return {
+        ...prevTotal,
+        diamond: diamondCount,
+        heart: heartCount,
+        club: clubCount,
+        spade: spadeCount,
+      }
+    })
+  }, [filteredArray, datas]);
+
   const getValueByKey = (name, key) => {
     return datas[name]?.result.find((r) => r.key === key)?.value;
   };
@@ -44,21 +131,61 @@ function AdminPage(props) {
   const handleChangeName = (e) => {
     let name = e.target.value;
     setName(name);
-    let filteredKeyArray = keyArray.filter((key) => key.includes(name));
+    setTeamlead("");
+    let filteredKeyArray = keyArray.filter((key) =>
+      key.toUpperCase().includes(name.toUpperCase())
+    );
     setFilteredArray(filteredKeyArray);
   };
 
-  const logout = () => {
-    setUser('');
-    localStorage.setItem('username', '');
-    navigate('/naming')
-  }
+  const handleChangeTeamlead = (e) => {
+    let teamleadName = e.target.value;
+    setName("");
+    setTeamlead(teamleadName);
+    let filteredArray = [];
+    keyArray.forEach((key) => {
+      Object.keys(datas)?.forEach((dataKey) => {
+        if (
+          datas[dataKey]?.teamlead
+            ?.toUpperCase()
+            ?.includes(teamleadName?.toUpperCase())
+        ) {
+          if (!filteredArray?.includes(datas[dataKey]?.name)) {
+            filteredArray.push(datas[dataKey]?.name);
+          }
+        }
+      });
+      setFilteredArray(filteredArray);
+    });
+  };
 
+  const logout = () => {
+    setUser("");
+    localStorage.setItem("username", "");
+    navigate("/naming");
+  };
+  // console.log(filteredArray);
   return (
-    <React.Fragment>
+    <div className="container">
       <div className="mt-3 d-flex justify-content-end">
-        <button type="button" className="btn-close me-3" aria-label="Close" onClick={logout}></button>
+        <button
+          type="button"
+          className="btn-close me-3"
+          aria-label="Close"
+          onClick={logout}
+        ></button>
       </div>
+      <label htmlFor="inputText" className="form-label mt-3">
+        Search teamlead
+      </label>
+      <input
+        type="text"
+        id="inputText"
+        className="form-control"
+        aria-describedby="inputText"
+        value={teamlead}
+        onChange={handleChangeTeamlead}
+      />
       <label htmlFor="inputText" className="form-label mt-3">
         Search name
       </label>
@@ -70,6 +197,12 @@ function AdminPage(props) {
         value={name}
         onChange={handleChangeName}
       />
+      <div className="d-flex flex-column justify-content-end align-items-start mt-4">
+        <p>Số người có điểm thấp nhất là lá Bích: {totalCount?.spade}</p>
+        <p>Số người có điểm thấp nhất là lá Tép: {totalCount?.club}</p>
+        <p>Số người có điểm thấp nhất là lá Rô: {totalCount?.diamond}</p>
+        <p>Số người có điểm thấp nhất là lá Tép: {totalCount?.heart}</p>
+      </div>
       <div className="d-flex flex-column justify-content-center align-items-center mt-4">
         {filteredArray?.length > 0 &&
           filteredArray?.map((key, index) => {
@@ -118,6 +251,7 @@ function AdminPage(props) {
               +getValueByKey(key, 36) +
               +getValueByKey(key, 40);
             let maxPoint = Math.max(maxOne, maxTwo, maxThree, maxFour);
+            let minPoint = Math.min(maxOne, maxTwo, maxThree, maxFour);
             return (
               <table className="table table-striped" key={key + index}>
                 <thead>
@@ -238,19 +372,19 @@ function AdminPage(props) {
                   </tr>
                   <tr>
                     <td>Tổng điểm</td>
-                    <td className={`${maxPoint === maxOne ? "bg-info" : ""}`}>
+                    <td className={`${maxPoint === maxOne ? "bg-danger" : ""} ${minPoint === maxOne ? "bg-info" : ""}`}>
                       {maxOne}
                     </td>
                     <td>-</td>
-                    <td className={`${maxPoint === maxTwo ? "bg-info" : ""}`}>
+                    <td className={`${maxPoint === maxTwo ? "bg-danger" : ""} ${minPoint === maxTwo ? "bg-info" : ""}`}>
                       {maxTwo}
                     </td>
                     <td>-</td>
-                    <td className={`${maxPoint === maxThree ? "bg-info" : ""}`}>
+                    <td className={`${maxPoint === maxThree ? "bg-danger" : ""} ${minPoint === maxThree ? "bg-info" : ""}`}>
                       {maxThree}
                     </td>
                     <td>-</td>
-                    <td className={`${maxPoint === maxFour ? "bg-info" : ""}`}>
+                    <td className={`${maxPoint === maxFour ? "bg-danger" : ""} ${minPoint === maxFour ? "bg-info" : ""}`}>
                       {maxFour}
                     </td>
                   </tr>
@@ -259,7 +393,7 @@ function AdminPage(props) {
             );
           })}
       </div>
-    </React.Fragment>
+    </div>
   );
 }
 
