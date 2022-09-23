@@ -56,7 +56,7 @@ function Survey(props) {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center">
+    <div className="">
       <table className="table table-striped">
         <thead>
           <tr>
